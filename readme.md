@@ -165,12 +165,12 @@ It would benefit future projects on this data to modify the data collection to i
 ```
 Repo Structure
 
-├── 1_Preprocessing.ipynb			<--- preprocessing notebook
-├── 2_Modeling.ipynb					<--- modeling notebook
-├── data											<--- data used in this project
-├── helpers.py								<--- helper functions
-├── images										<--- images directory
-├── presentation.pdf					<--- pdf of presentation slides
-└── readme.md									<--- this file
+├── 1_Preprocessing.ipynb     <--- preprocessing notebook
+├── 2_Modeling.ipynb          <--- modeling notebook
+├── data/                     <--- data used in this project
+├── helpers.py                <--- helper functions
+├── images/                   <--- images directory
+├── presentation.pdf          <--- pdf of presentation slides
+└── readme.md                 <--- this file
 ```
 
