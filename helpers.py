@@ -19,18 +19,12 @@ def filter_top_cats(array, t = 5, method = 'number'):
 #          that t is the minumum percent of of the column a value represents.
 # '''
 
-#    import pandas as pd
-
     df = pd.DataFrame(array)
-    #print('t = ', t)
-    #print('method = ', method)
-    #print('df type = ', type(df))
 
-    #display(df)
-    #display(col.value_counts(normalize = True))
-    #new_df = df.copy()
-
+    # treat each col individually
     for col in df.columns:
+
+        # choose reduction method and get the names of the values to keep
         if method == 'number':
             keep = df[col].value_counts()[:t].index
         elif method == 'percent':
@@ -39,7 +33,7 @@ def filter_top_cats(array, t = 5, method = 'number'):
             warnings.warn('invalid value for "method." Keeping all values')
             return array
 
-
+        # replace all values that we are not keeping with 'other'
         df[col] = df[col].map(lambda x: x if x in keep else 'other')
 
     return df.astype('object')
@@ -81,12 +75,8 @@ def get_feature_names(column_transformer):
                 indices = np.arange(column_transformer._n_features)
                 return ['x%d' % i for i in indices[column]]
         if not hasattr(trans, 'get_feature_names'):
+
         # >>> Change: Return input column names if no method avaiable
-            # Turn error into a warning
-#             warnings.warn("Transformer %s (type %s) does not "
-#                                  "provide get_feature_names. "
-#                                  "Will return input column names if available"
-#                                  % (str(name), type(trans).__name__))
             # For transformers without a get_features_names method, use the input
             # names to the column transformer
             if column is None:
@@ -129,121 +119,29 @@ def get_feature_names(column_transformer):
 # Custom Transformer for Date Field
 class DatePrep(BaseEstimator, TransformerMixin):
     def __init__(self, strategy = 'median'):
+        # store the srategy
         self.strategy = strategy
     def fit(self, df, y = None):
         df.replace(0, np.nan, inplace = True)
+        # store the value to fill with based on the fill strategy
         self.fill_vals = eval(f'df.{self.strategy}()')
-        #print('Set fill_vals to:')
-        # display(self.fill_vals)
         return self
+
     def transform(self, df, y = None):
-        #print('array sent to date_prep is of type:', type(df))
+
+        # replace 0 with nan
         df.replace(0, np.nan, inplace = True)
 
+        # fill construction value
         df['construction_year'].fillna(self.fill_vals['construction_year'],
                                        inplace = True)
-        #display(df['construction_year'].head())
+
+        # get datetime of date recorded
         date_recorded = pd.to_datetime(df['date_recorded'])
+
+        # calculate delta to consruction date
         years_since_construction = date_recorded.dt.year - df['construction_year']
+
+        # convert date to days
         days_since_epoch = (date_recorded - datetime(1970,1,1)).dt.days
         return pd.concat([days_since_epoch, years_since_construction], axis = 1)
-
-class TargetEncoder(BaseEstimator, TransformerMixin):
-    """Target encoder.
-
-    Replaces categorical column(s) with the mean target value for
-    each category.
-
-    """
-
-    def __init__(self, cols=None):
-        """Target encoder
-
-        Parameters
-        ----------
-        cols : list of str
-            Columns to target encode.  Default is to target
-            encode all categorical columns in the DataFrame.
-        """
-        if isinstance(cols, str):
-            self.cols = [cols]
-        else:
-            self.cols = cols
-
-
-    def fit(self, X, y):
-        """Fit target encoder to X and y
-
-        Parameters
-        ----------
-        X : pandas DataFrame, shape [n_samples, n_columns]
-            DataFrame containing columns to encode
-        y : pandas Series, shape = [n_samples]
-            Target values.
-
-        Returns
-        -------
-        self : encoder
-            Returns self.
-        """
-
-        # Encode all categorical cols by default
-        if self.cols is None:
-            self.cols = [col for col in X
-                         if str(X[col].dtype)=='object']
-
-        # Check columns are in X
-        for col in self.cols:
-            if col not in X:
-                raise ValueError('Column \''+col+'\' not in X')
-
-        # Encode each element of each column
-        self.maps = dict() #dict to store map for each column
-        for col in self.cols:
-            tmap = dict()
-            uniques = X[col].unique()
-            for unique in uniques:
-                tmap[unique] = y[X[col]==unique].mean()
-            self.maps[col] = tmap
-
-        return self
-
-
-    def transform(self, X, y=None):
-        """Perform the target encoding transformation.
-
-        Parameters
-        ----------
-        X : pandas DataFrame, shape [n_samples, n_columns]
-            DataFrame containing columns to encode
-
-        Returns
-        -------
-        pandas DataFrame
-            Input DataFrame with transformed columns
-        """
-        Xo = X.copy()
-        for col, tmap in self.maps.items():
-            vals = np.full(X.shape[0], np.nan)
-            for val, mean_target in tmap.items():
-                vals[X[col]==val] = mean_target
-            Xo[col] = vals
-        return Xo
-
-
-    def fit_transform(self, X, y=None):
-        """Fit and transform the data via target encoding.
-
-        Parameters
-        ----------
-        X : pandas DataFrame, shape [n_samples, n_columns]
-            DataFrame containing columns to encode
-        y : pandas Series, shape = [n_samples]
-            Target values (required!).
-
-        Returns
-        -------
-        pandas DataFrame
-            Input DataFrame with transformed columns
-        """
-        return self.fit(X, y).transform(X, y)

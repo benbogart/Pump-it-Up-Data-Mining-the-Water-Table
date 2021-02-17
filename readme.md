@@ -170,6 +170,7 @@ Repo Structure
 ├── data											<--- data used in this project
 ├── helpers.py								<--- helper functions
 ├── images										<--- images directory
+├── presentation.pdf					<--- pdf of presentation slides
 └── readme.md									<--- this file
 ```
 
