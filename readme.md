@@ -2,7 +2,7 @@
 
 # Problem Description:
 
-Though an open source coding effort Taarifa - a group of volunteer coders in Tanzania -  put together a dashboard to monitor public infrastructure.  The data in this collection is on water well systems.  When communities are without water they suffer in many ways.  More time needs to be spent on water collection and less time can be spent on work or income generation.  Poor water sources may be used leading to health problems.  In some cases a broken well can cause death.
+Though an open source coding effort Taarifa - a group of volunteer coders in Tanzania -  put together a dashboard to monitor public infrastructure.  The data in this collection is on water well systems.  When communities are without water they suffer in many ways;  more time needs to be spent on water collection and less time can be spent on work or income generation.  Poor water sources may be used leading to health problems.  In some cases a broken well can cause death.
 
 The Tanzanian government does not have the resources to continually inspect these wells and the communities they serve may not have the means to communicate to officials when the wells stop working.
 
